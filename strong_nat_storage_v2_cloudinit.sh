@@ -39,9 +39,13 @@ firewall-offline-cmd --zone=public --add-port=500/tcp
 firewall-offline-cmd --zone=public --add-port=4500/udp 
 firewall-offline-cmd --zone=public --add-port=4500/tcp
 firewall-offline-cmd --zone=public --add-masquerade 
-#firewall-offline-cmd --zone=public --add-forward-port=port=443:proto=tcp:toport=443:toaddr=1.2.3.4
+
+vmmeta=$(curl -L http://169.254.169.254/opc/v1/instance/)
+curegnoq=$(echo $vmmeta | jq -r '.region')
+storip=$(dig +short objectstorage.$curegnoq.oraclecloud.com. | awk '{line = $0} END {print line}')
 localip=$(hostname -I | awk '{print $1}')
-firewall-offline-cmd --zone=public --add-rich-rule="rule family=ipv4 destination address='$localip' forward-port port=443 protocol=tcp to-port=443 to-addr=1.2.3.4"
+firewall-offline-cmd --zone=public --add-rich-rule="rule family=ipv4 destination address='$localip' forward-port port=443 protocol=tcp to-port=443 to-addr='$storip'"
+
 systemctl restart firewalld
 
 systemctl enable strongswan
@@ -51,24 +55,24 @@ cat <<EOF >> /etc/strongswan/ipsec.conf
 conn OCIPri
         authby=psk
         auto=start
-        keyexchange=ikev2
-        left=192.168.241.5
-        leftid=1.2.3.4
-        leftsubnet=192.168.241.0/24
-        right=9.8.7.6
-        rightid=9.8.7.6
-        rightsubnet=192.168.240.0/24
-        ike=aes256-sha384-modp1536
-        esp=aes256-sha1-modp1536
+
+        left=$localip
+        leftid=a.b.c.d #should be replaced by OCI Reserved Public IP address.
+        leftsubnet=192.168.241.0/24 #should be replaced by OCI VCN IP address range in CIDR notation.
+        right=e.f.g.h #should be replaced by on-premises VPN Public IP address.
+        rightid=e.f.g.h #should be modified to accept custom IKE IDentifier.(Optional) 
+        rightsubnet=192.168.240.0/24 #should be replaced by on-premises internal network IP address range in CIDR notation.
+        ike=aes256-sha1-modp1024 #Phase 1 proposals Should be modified to match on-premises VPN endpoint configuration.  
+        esp=aes256-sha1-modp1024 #Phase 2 proposals Should be modified to match on-premises VPN endpoint configuration.
 EOF
 cat <<EOF >> /etc/strongswan/ipsec.secrets
-192.168.241.5 9.8.7.6 : PSK "baptiste123456789!"
-1.2.3.4 9.8.7.6 : PSK "baptiste123456789!"
+$localip e.f.g.h : PSK "Baptiste123456789!" 
+a.b.c.d e.f.g.h : PSK "Baptiste123456789!"
 EOF
 strongswan restart
 
 cd /home/opc/
-echo 1.2.3.4 > curip
+echo $storip > curip
 wget https://raw.githubusercontent.com/BaptisS/oci_nat_storage/master/netmask.sh
 wget https://raw.githubusercontent.com/BaptisS/oci_nat_storage/master/natcheck.sh
 chmod +x netmask.sh
