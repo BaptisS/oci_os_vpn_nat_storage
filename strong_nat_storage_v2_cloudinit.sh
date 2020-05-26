@@ -55,15 +55,15 @@ cat <<EOF >> /etc/strongswan/ipsec.conf
 conn OCIPri
         authby=psk
         auto=start
-
+        keyexchange=ikev2
         left=$localip
         leftid=a.b.c.d #should be replaced by OCI Reserved Public IP address.
         leftsubnet=192.168.241.0/24 #should be replaced by OCI VCN IP address range in CIDR notation.
         right=e.f.g.h #should be replaced by on-premises VPN Public IP address.
         rightid=e.f.g.h #should be modified to accept custom IKE IDentifier.(Optional) 
         rightsubnet=192.168.240.0/24 #should be replaced by on-premises internal network IP address range in CIDR notation.
-        ike=aes256-sha1-modp1024 #Phase 1 proposals Should be modified to match on-premises VPN endpoint configuration.  
-        esp=aes256-sha1-modp1024 #Phase 2 proposals Should be modified to match on-premises VPN endpoint configuration.
+        ike=aes256-sha384-modp1536 #Phase 1 proposals Should be modified to match on-premises VPN endpoint configuration.  
+        esp=aes256-sha1-modp1536 #Phase 2 proposals Should be modified to match on-premises VPN endpoint configuration.
 EOF
 cat <<EOF >> /etc/strongswan/ipsec.secrets
 $localip e.f.g.h : PSK "Baptiste123456789!" 
