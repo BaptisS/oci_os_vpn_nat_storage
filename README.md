@@ -13,7 +13,7 @@ _Access OCI Object Storage over S2S IPSEC VPN using private IP (StrongSwan S2S V
 -	On-premises internal network ip address range in CIDR notation.
  
  
-### 1- Prepare the CloudInit script for the migration server(AZ2OCIVM).
+### 1- Prepare the CloudInit script for the VPN+NAT Server (OCIVPNNAT01).
 
  1.1-	Download the following CloudInit script : https://raw.githubusercontent.com/BaptisS/oci_os_vpn_nat_storage/master/strong_nat_storage_v2_cloudinit.sh
  
