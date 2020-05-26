@@ -49,6 +49,25 @@ firewall-offline-cmd --zone=public --add-rich-rule="rule family=ipv4 destination
 systemctl restart firewalld
 
 systemctl enable strongswan
+
+##### IPSEC Variables #####
+#OCI Reserved Public IP address :
+leftid=a.b.c.d 
+#OCI VCN IP address range in CIDR notation :
+leftsubnet=192.168.241.0/24
+#On-premises VPN Public IP address :
+right=e.f.g.h
+#Custom IKE IDentifier (Optional) :
+rightid=$right
+#On-premises internal network IP address range in CIDR notation:
+rightsubnet=192.168.240.0/24
+#Phase 1 / Phase 2 proposals. Should be modified to match on-premises VPN endpoint configuration.
+P1props=aes256-sha384-modp1536
+P2props=aes256-sha1-modp1536
+#Pre-Shared Key 
+PSK="Baptiste123456789!"
+##### IPSEC Variables #####
+
 mv /etc/strongswan/ipsec.conf /etc/strongswan/ipsec.conf.bak
 cat <<EOF >> /etc/strongswan/ipsec.conf
 
@@ -57,17 +76,17 @@ conn OCIPri
         auto=start
         keyexchange=ikev2
         left=$localip
-        leftid=a.b.c.d #should be replaced by OCI Reserved Public IP address.
-        leftsubnet=192.168.241.0/24 #should be replaced by OCI VCN IP address range in CIDR notation.
-        right=e.f.g.h #should be replaced by on-premises VPN Public IP address.
-        rightid=e.f.g.h #should be modified to accept custom IKE IDentifier.(Optional) 
-        rightsubnet=192.168.240.0/24 #should be replaced by on-premises internal network IP address range in CIDR notation.
-        ike=aes256-sha384-modp1536 #Phase 1 proposals Should be modified to match on-premises VPN endpoint configuration.  
-        esp=aes256-sha1-modp1536 #Phase 2 proposals Should be modified to match on-premises VPN endpoint configuration.
+        leftid=$leftid 
+        leftsubnet=$leftsubnet 
+        right=$right
+        rightid=$rightid   
+        rightsubnet=$rightsubnet 
+        ike=$P1props
+        esp=$P2props
 EOF
 cat <<EOF >> /etc/strongswan/ipsec.secrets
-$localip e.f.g.h : PSK "Baptiste123456789!" 
-a.b.c.d e.f.g.h : PSK "Baptiste123456789!"
+$localip $right : PSK $PSK 
+$leftid $right : PSK $PSK
 EOF
 strongswan restart
 
