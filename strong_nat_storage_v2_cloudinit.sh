@@ -39,7 +39,9 @@ firewall-offline-cmd --zone=public --add-port=500/tcp
 firewall-offline-cmd --zone=public --add-port=4500/udp 
 firewall-offline-cmd --zone=public --add-port=4500/tcp
 firewall-offline-cmd --zone=public --add-masquerade 
-firewall-offline-cmd --zone=public --add-forward-port=port=443:proto=tcp:toport=443:toaddr=1.2.3.4
+#firewall-offline-cmd --zone=public --add-forward-port=port=443:proto=tcp:toport=443:toaddr=1.2.3.4
+localip=$(hostname -I | awk '{print $1}')
+firewall-offline-cmd --zone=public --add-rich-rule="rule family=ipv4 destination address='$localip' forward-port port=443 protocol=tcp to-port=443 to-addr=1.2.3.4"
 systemctl restart firewalld
 
 systemctl enable strongswan
