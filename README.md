@@ -17,29 +17,22 @@ _Access OCI Object Storage over S2S IPSEC VPN using private IP (StrongSwan S2S V
 
  1.1-	Download the following CloudInit script : https://raw.githubusercontent.com/BaptisS/oci_os_vpn_nat_storage/master/strong_nat_storage_v2_cloudinit.sh
  
- 1.2-   Locate the section 'conn OCIPri' and update the S2S IPSEC VPN parameters with your own values : 
+ 1.2-   Locate the section '##### IPSEC Variables #####' and update the S2S IPSEC VPN parameters with your own values : 
  
-    -conn OCIPri
-        authby=psk
-        auto=start
-        keyexchange=ikev2
-        left=192.168.241.5 (Private Ip address for the VPN+NAT Instance. Must be in VCN/Subnet IP address range) 
-        leftid=1.2.3.4 (Reserved Public Ip address for the VPN+NAT Instance.)
-        leftsubnet=192.168.241.0/24 (VCN IP address range in CIDR notation.)
-        right=9.8.7.6 (CPE Public Ip address.)
-        rightid=9.8.7.6 (CPE Public IKE IDentifier.)
-        rightsubnet=192.168.240.0/24 (On-premises internal network IP address range in CIDR notation.)
-        ike=aes256-sha384-modp1536 (Phase 1 hashing, encryption + PFS proposals.)
-        esp=aes256-sha1-modp1536 (Phase 2 hashing, encryption + PFS proposals.)
+    ##### IPSEC Variables ##### 
+    
+leftid=a.b.c.d                  #OCI Reserved Public IP address :
+leftsubnet=192.168.241.0/24     #OCI VCN IP address range in CIDR notation :
+right=e.f.g.h                   #On-premises VPN Public IP address :
+rightid=$right                  #Custom IKE IDentifier (Optional) :
+rightsubnet=192.168.240.0/24    #On-premises internal network IP address range in CIDR notation:
+P1props=aes256-sha384-modp1536  #Phase 1 proposals. Should be modified to match on-premises VPN endpoint configuration.
+P2props=aes256-sha1-modp1536    #Phase 2 proposals. Should be modified to match on-premises VPN endpoint configuration.
+PSK="Baptiste123456789!"        #Pre-Shared Key 
+
+    ##### IPSEC Variables #####
  
- 1.3-   Locate the following section ('cat <<EOF >> /etc/strongswan/ipsec.secrets') and update the content with your own pre shared key. 
-  
-     cat <<EOF >> /etc/strongswan/ipsec.secrets
-      192.168.241.5 9.8.7.6 : PSK "baptiste123456789!"
-      1.2.3.4 9.8.7.6 : PSK "baptiste123456789!"
-     EOF
- 
- 1.4-   Save the updated CloudInit script.  
+ 1.3-   Save the updated CloudInit script.  
  
 
 ### 3- Provision the S2S VPN + NAT Instance (OCIVPNNAT01).    
