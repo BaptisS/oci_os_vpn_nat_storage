@@ -19,17 +19,15 @@ _Access OCI Object Storage over S2S IPSEC VPN using private IP (StrongSwan S2S V
  
  1.2-   Locate the section '##### IPSEC Variables #####' and update the S2S IPSEC VPN parameters with your own values : 
  
-    ##### IPSEC Variables ##### 
-    
-leftid=a.b.c.d                  #OCI Reserved Public IP address :
-leftsubnet=192.168.241.0/24     #OCI VCN IP address range in CIDR notation :
-right=e.f.g.h                   #On-premises VPN Public IP address :
-rightid=$right                  #Custom IKE IDentifier (Optional) :
-rightsubnet=192.168.240.0/24    #On-premises internal network IP address range in CIDR notation:
-P1props=aes256-sha384-modp1536  #Phase 1 proposals. Should be modified to match on-premises VPN endpoint configuration.
-P2props=aes256-sha1-modp1536    #Phase 2 proposals. Should be modified to match on-premises VPN endpoint configuration.
-PSK="Baptiste123456789!"        #Pre-Shared Key 
-
+    ##### IPSEC Variables #####     
+    leftid=a.b.c.d                  #OCI Reserved Public IP address.
+    leftsubnet=192.168.241.0/24     #OCI VCN IP address range in CIDR notation.
+    right=e.f.g.h                   #On-premises VPN Public IP address.
+    rightid=$right                  #Custom IKE IDentifier (Optional).
+    rightsubnet=192.168.240.0/24    #On-premises internal network IP address range in CIDR notation:
+    P1props=aes256-sha384-modp1536  #Phase 1 proposals. Should be modified to match on-premises VPN endpoint configuration.
+    P2props=aes256-sha1-modp1536    #Phase 2 proposals. Should be modified to match on-premises VPN endpoint configuration.
+    PSK="Baptiste123456789!"        #Pre-Shared Key 
     ##### IPSEC Variables #####
  
  1.3-   Save the updated CloudInit script.  
