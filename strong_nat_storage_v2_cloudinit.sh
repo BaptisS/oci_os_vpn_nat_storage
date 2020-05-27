@@ -51,21 +51,16 @@ systemctl restart firewalld
 systemctl enable strongswan
 
 ##### IPSEC Variables #####
-#OCI Reserved Public IP address :
-leftid=a.b.c.d 
-#OCI VCN IP address range in CIDR notation :
-leftsubnet=192.168.241.0/24
-#On-premises VPN Public IP address :
-right=e.f.g.h
-#Custom IKE IDentifier (Optional) :
-rightid=$right
-#On-premises internal network IP address range in CIDR notation:
-rightsubnet=192.168.240.0/24
-#Phase 1 / Phase 2 proposals. Should be modified to match on-premises VPN endpoint configuration.
-P1props=aes256-sha384-modp1536
-P2props=aes256-sha1-modp1536
-#Pre-Shared Key 
-PSK="Baptiste123456789!"
+
+leftid=a.b.c.d                   #OCI Reserved Public IP address :
+leftsubnet=192.168.241.0/24      #OCI VCN IP address range in CIDR notation :
+right=e.f.g.h                    #On-premises VPN Public IP address :
+rightid=$right                   #Custom IKE IDentifier (Optional) :
+rightsubnet=192.168.240.0/24     #On-premises internal network IP address range in CIDR notation:
+P1props=aes256-sha384-modp1536   #Phase 1 proposals. Should be modified to match on-premises VPN endpoint configuration.
+P2props=aes256-sha1-modp1536     #Phase 2 proposals. Should be modified to match on-premises VPN endpoint configuration.
+PSK="Baptiste123456789!"         #Pre-Shared Key
+
 ##### IPSEC Variables #####
 
 mv /etc/strongswan/ipsec.conf /etc/strongswan/ipsec.conf.bak
